@@ -1,0 +1,73 @@
+##############################
+# Calculate the number of journals
+##############################
+nrow(df1)  # Number of journals indexed in the single year (e.g., 2012)
+
+##############################
+# Calculate Jaccard Index
+##############################
+jaccard_index <- function(df1, df2) {
+  set1 <- unique(as.vector(t(as.matrix(df1))))
+  set2 <- unique(as.vector(t(as.matrix(df2))))
+  intersection <- length(intersect(set1, set2))
+  union <- length(union(set1, set2))
+  jaccard_score <- intersection / union
+  return(jaccard_score)
+}
+
+df1 <- data.frame(Journal = c("J1", "J2", "J3", "J4")) # Journals indexed in the first year (e.g., 2012)
+df2 <- data.frame(Journal = c("J3", "J4", "J5")) # Journals indexed in the second year (e.g., 2022)
+
+jaccard_score <- jaccard_index(df1, df2)
+print(jaccard_score)
+
+##############################
+# Calculate growth rate
+##############################
+growth <- function(initial_count, final_count) {
+  growth_rate <- (final_count - initial_count) / initial_count * 100
+  return(growth_rate)
+}
+
+df1 <- data.frame(Journal = c("J1", "J2", "J3", "J4")) # Journals indexed in the first year (e.g., 2012)
+df2 <- data.frame(Journal = c("J3", "J4", "J5")) # Journals indexed in the second year (e.g., 2022)
+
+initial_count <- nrow(df1)	# Number of journals indexed in the first year (e.g., 2012)
+final_count <- nrow(df2)	# Number of journals indexed in the second year (e.g., 2022)
+
+growth_rate <- growth(initial_count, final_count)
+print(growth_rate)
+
+##############################
+# Calculate normalized growth rate
+##############################
+normalized_growth <- function(score) {
+  min_score <- min(score)
+  max_score <- max(score)
+  norm_score <- (score - min_score) / (max_score - min_score)
+  return(norm_score)
+}
+
+growth_rate <- c(20, 30, 40)  # Example growth rate
+normalized_growth_rate <- normalized_growth(growth_rate)
+print(normalized_growth_rate)
+
+
+##############################
+# The Quadrant Approach
+##############################
+ji_values <- c(0.6, 0.8, 0.5, 0.7, 0.9)  # Example vector for Jaccard index
+ngr_values <- c(0.02, 0.05, 0.08, 0.03, 0.06)  # Example vector for Normalized Growth Rate
+
+mean_ji <- mean(ji_values) # mean of Jaccard index
+mean_ngr <- mean(ngr_values) # mean of Normalized Growth Rate
+
+df <- data.frame(ji = ji_values, ngr = ngr_values)  # combined vector as a dataframe
+
+# Assign quadrants
+df$quadrant[df$ji > mean_ji & df$ngr > mean_ngr] <- "Q1"
+df$quadrant[df$ji <= mean_ji & df$ngr > mean_ngr] <- "Q2"
+df$quadrant[df$ji <= mean_ji & df$ngr <= mean_ngr] <- "Q3"
+df$quadrant[df$ji > mean_ji & df$ngr <= mean_ngr] <- "Q4"
+
+print(df)
